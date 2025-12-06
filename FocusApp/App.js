@@ -7,6 +7,8 @@ import { Ionicons } from "@expo/vector-icons";
 import HomeScreen from "./src/screens/HomeScreen";
 import ReportsScreen from "./src/screens/ReportsScreen";
 
+import "./global.css";
+
 const Tab = createBottomTabNavigator();
 
 export default function App() {
