@@ -10,17 +10,30 @@ export default function HomeScreen() {
 
   const appState = useRef(AppState.currentState);
 
+  // FIX 1: Seans kaydedildi mi? (Çift kaydı önlemek için)
+  const isSessionSaved = useRef(false);
+
+  // FIX 2: Çift dağınıklık saymayı önlemek için son zaman damgası
+  const lastDistractionTime = useRef(0);
+
   const categories = ["Ders Çalışma", "Kodlama", "Proje", "Kitap Okuma"];
 
+  // --- İSPİYONCU (APPSTATE) ---
   useEffect(() => {
     const subscription = AppState.addEventListener("change", (nextAppState) => {
       if (
         appState.current.match(/active/) &&
         (nextAppState === "background" || nextAppState === "inactive")
       ) {
+        // Eğer sayaç çalışıyorsa
         if (isActive) {
-          setIsActive(false);
-          setDistractionCount((prev) => prev + 1);
+          const now = Date.now();
+          // Eğer son 1 saniye içinde zaten ceza kestiysek, tekrar kesme (Debounce)
+          if (now - lastDistractionTime.current > 1000) {
+            setIsActive(false); // Durdur
+            setDistractionCount((prev) => prev + 1); // Artır
+            lastDistractionTime.current = now; // Zamanı güncelle
+          }
         }
       }
       appState.current = nextAppState;
@@ -29,8 +42,9 @@ export default function HomeScreen() {
     return () => {
       subscription.remove();
     };
-  }, [isActive]);
+  }, [isActive]); // isActive değiştikçe listener güncellenir
 
+  // --- ZAMANLAYICI ---
   useEffect(() => {
     let interval = null;
 
@@ -39,8 +53,14 @@ export default function HomeScreen() {
         setTimeLeft((prevTime) => prevTime - 1);
       }, 1000);
     } else if (timeLeft === 0) {
+      // SÜRE BİTTİ
       setIsActive(false);
-      handleSessionComplete();
+
+      // Eğer henüz kaydedilmediyse kaydet
+      if (!isSessionSaved.current) {
+        handleSessionComplete();
+        isSessionSaved.current = true; // KİLİT: Artık kaydedildi işaretle
+      }
     }
 
     return () => clearInterval(interval);
@@ -59,11 +79,19 @@ export default function HomeScreen() {
 
     Alert.alert(
       "Tebrikler! 🎉",
-      "Seans başarıyla tamamlandı ve veritabanına kaydedildi."
+      "Seans başarıyla tamamlandı ve kaydedildi. Yeni seans için lütfen SIFIRLA butonuna bas."
     );
   };
 
   const startTimer = () => {
+    // KİLİT: Eğer süre bitmişse (0 ise), BAŞLATMA!
+    if (timeLeft <= 0) {
+      Alert.alert(
+        "Süre Bitti",
+        "Lütfen yeni bir seans için önce SIFIRLA butonuna bas."
+      );
+      return;
+    }
     setIsActive(true);
   };
 
@@ -75,6 +103,7 @@ export default function HomeScreen() {
     setIsActive(false);
     setTimeLeft(25 * 60);
     setDistractionCount(0);
+    isSessionSaved.current = false; // KİLİDİ AÇ: Yeni seans için hazır
   };
 
   const formatTime = (seconds) => {
@@ -84,6 +113,11 @@ export default function HomeScreen() {
   };
 
   const debugSetTime = () => {
+    // Sadece test için süreyi 5 saniye yapar
+    // Eğer seans zaten bitmişse ve sıfırlanmamışsa hile yapmaya izin verme
+    if (isSessionSaved.current) {
+      resetTimer();
+    }
     setTimeLeft(5);
   };
 
