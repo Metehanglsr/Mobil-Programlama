@@ -1,18 +1,12 @@
 import React, { useState, useEffect, useCallback } from "react";
-import {
-  View,
-  Text,
-  ScrollView,
-  RefreshControl,
-  TouchableOpacity,
-  Alert,
-  Dimensions,
-} from "react-native";
+import { View, ScrollView, RefreshControl, Alert } from "react-native";
 import { useIsFocused } from "@react-navigation/native";
 import { getFocusSessions, clearAllSessions } from "../utils/storage";
-import { BarChart, PieChart } from "react-native-chart-kit";
 
-const screenWidth = Dimensions.get("window").width;
+import ReportsHeader from "../components/reports/ReportsHeader";
+import StatsGrid from "../components/reports/StatsGrid";
+import PerformanceChart from "../components/reports/PerformanceChart";
+import CategoryChart from "../components/reports/CategoryChart";
 
 export default function ReportsScreen() {
   const [stats, setStats] = useState({
@@ -124,15 +118,7 @@ export default function ReportsScreen() {
 
   return (
     <View className="flex-1 bg-gray-50 pt-16 px-5">
-      <View className="flex-row justify-between items-center mb-6">
-        <Text className="text-3xl font-bold text-gray-800">Raporlar</Text>
-        <TouchableOpacity
-          onPress={handleClearData}
-          className="bg-red-100 px-3 py-1 rounded-lg"
-        >
-          <Text className="text-red-500 font-bold text-xs">TEMİZLE</Text>
-        </TouchableOpacity>
-      </View>
+      <ReportsHeader onClear={handleClearData} />
 
       <ScrollView
         showsVerticalScrollIndicator={false}
@@ -141,88 +127,11 @@ export default function ReportsScreen() {
         }
         contentContainerStyle={{ paddingBottom: 50 }}
       >
-        <View className="flex-row flex-wrap justify-between mb-6">
-          <View className="w-[48%] bg-white p-4 rounded-2xl shadow-sm mb-4 border-l-4 border-blue-500">
-            <Text className="text-gray-500 text-xs font-bold uppercase mb-1">
-              Bugün
-            </Text>
-            <Text className="text-2xl font-bold text-gray-800">
-              {stats.todayFocus}{" "}
-              <Text className="text-sm font-normal text-gray-500">dk</Text>
-            </Text>
-          </View>
-          <View className="w-[48%] bg-white p-4 rounded-2xl shadow-sm mb-4 border-l-4 border-purple-500">
-            <Text className="text-gray-500 text-xs font-bold uppercase mb-1">
-              Toplam
-            </Text>
-            <Text className="text-2xl font-bold text-gray-800">
-              {stats.totalFocus}{" "}
-              <Text className="text-sm font-normal text-gray-500">dk</Text>
-            </Text>
-          </View>
-          <View className="w-[48%] bg-white p-4 rounded-2xl shadow-sm mb-4 border-l-4 border-red-500">
-            <Text className="text-gray-500 text-xs font-bold uppercase mb-1">
-              Dağınıklık
-            </Text>
-            <Text className="text-2xl font-bold text-gray-800">
-              {stats.totalDistractions}{" "}
-              <Text className="text-sm font-normal text-gray-500">kez</Text>
-            </Text>
-          </View>
-          <View className="w-[48%] bg-white p-4 rounded-2xl shadow-sm mb-4 border-l-4 border-green-500">
-            <Text className="text-gray-500 text-xs font-bold uppercase mb-1">
-              Seanslar
-            </Text>
-            <Text className="text-2xl font-bold text-gray-800">
-              {stats.sessionCount}{" "}
-              <Text className="text-sm font-normal text-gray-500">adet</Text>
-            </Text>
-          </View>
-        </View>
+        <StatsGrid stats={stats} />
 
-        <Text className="text-lg font-bold text-gray-700 mb-3 ml-1">
-          Son 7 Günlük Performans
-        </Text>
-        <View className="items-center bg-white rounded-2xl p-2 mb-8 shadow-sm overflow-hidden">
-          <BarChart
-            data={barData}
-            width={screenWidth - 60}
-            height={220}
-            yAxisSuffix=" dk"
-            chartConfig={{
-              backgroundColor: "#ffffff",
-              backgroundGradientFrom: "#ffffff",
-              backgroundGradientTo: "#ffffff",
-              decimalPlaces: 0,
-              color: (opacity = 1) => `rgba(255, 99, 71, ${opacity})`,
-              labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
-            }}
-            style={{ borderRadius: 16 }}
-            showValuesOnTopOfBars
-          />
-        </View>
+        <PerformanceChart data={barData} />
 
-        {pieData.length > 0 && (
-          <>
-            <Text className="text-lg font-bold text-gray-700 mb-3 ml-1">
-              Kategori Dağılımı
-            </Text>
-            <View className="bg-white rounded-2xl p-4 shadow-sm mb-6 items-center">
-              <PieChart
-                data={pieData}
-                width={screenWidth - 60}
-                height={200}
-                chartConfig={{
-                  color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
-                }}
-                accessor={"population"}
-                backgroundColor={"transparent"}
-                paddingLeft={"15"}
-                absolute
-              />
-            </View>
-          </>
-        )}
+        <CategoryChart data={pieData} />
       </ScrollView>
     </View>
   );
