@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { View, ScrollView, RefreshControl, Alert } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { useIsFocused } from "@react-navigation/native";
 import { getFocusSessions, clearAllSessions } from "../utils/storage";
 
@@ -117,22 +118,27 @@ export default function ReportsScreen() {
   };
 
   return (
-    <View className="flex-1 bg-gray-50 pt-16 px-5">
-      <ReportsHeader onClear={handleClearData} />
+    <SafeAreaView
+      edges={["top", "left", "right"]}
+      className="flex-1 bg-gray-50"
+    >
+      <View className="px-5 pt-4 flex-1">
+        <ReportsHeader onClear={handleClearData} />
 
-      <ScrollView
-        showsVerticalScrollIndicator={false}
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-        }
-        contentContainerStyle={{ paddingBottom: 50 }}
-      >
-        <StatsGrid stats={stats} />
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          }
+          contentContainerStyle={{ paddingBottom: 50 }}
+        >
+          <StatsGrid stats={stats} />
 
-        <PerformanceChart data={barData} />
+          <PerformanceChart data={barData} />
 
-        <CategoryChart data={pieData} />
-      </ScrollView>
-    </View>
+          <CategoryChart data={pieData} />
+        </ScrollView>
+      </View>
+    </SafeAreaView>
   );
 }
