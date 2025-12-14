@@ -28,17 +28,16 @@ export default function HomeScreen() {
   } = useFocusTimer();
 
   return (
-    <SafeAreaView edges={["top", "left", "right"]} className="flex-1 bg-white">
+    <SafeAreaView className="flex-1 bg-white" edges={["top", "left", "right"]}>
       <ScrollView
         contentContainerStyle={{
           alignItems: "center",
-          paddingTop: 20,
           paddingHorizontal: 20,
           paddingBottom: 40,
         }}
         showsVerticalScrollIndicator={false}
       >
-        <Text className="text-3xl font-bold mb-4 text-gray-800">
+        <Text className="text-3xl font-bold mb-4 text-gray-800 mt-4">
           Odaklanma Zamanı
         </Text>
 

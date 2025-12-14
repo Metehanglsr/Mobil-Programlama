@@ -7,6 +7,8 @@ import { SafeAreaProvider } from "react-native-safe-area-context";
 import HomeScreen from "./src/screens/HomeScreen";
 import ReportsScreen from "./src/screens/ReportsScreen";
 
+import "./global.css";
+
 const Tab = createBottomTabNavigator();
 
 export default function App() {
@@ -15,18 +17,20 @@ export default function App() {
       <NavigationContainer>
         <Tab.Navigator
           screenOptions={({ route }) => ({
+            headerShown: false,
             tabBarIcon: ({ focused, color, size }) => {
               let iconName;
+
               if (route.name === "Ana Sayfa") {
                 iconName = focused ? "timer" : "timer-outline";
               } else if (route.name === "Raporlar") {
                 iconName = focused ? "bar-chart" : "bar-chart-outline";
               }
+
               return <Ionicons name={iconName} size={size} color={color} />;
             },
-            tabBarActiveTintColor: "#ef4444",
+            tabBarActiveTintColor: "tomato",
             tabBarInactiveTintColor: "gray",
-            headerShown: false,
           })}
         >
           <Tab.Screen name="Ana Sayfa" component={HomeScreen} />

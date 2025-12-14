@@ -118,11 +118,8 @@ export default function ReportsScreen() {
   };
 
   return (
-    <SafeAreaView
-      edges={["top", "left", "right"]}
-      className="flex-1 bg-gray-50"
-    >
-      <View className="px-5 pt-4 flex-1">
+    <SafeAreaView className="flex-1 bg-white" edges={["top", "left", "right"]}>
+      <View className="px-5 flex-1">
         <ReportsHeader onClear={handleClearData} />
 
         <ScrollView
